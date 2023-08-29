@@ -19,16 +19,11 @@
 #
 # More info and git repo: https://bit.ly/2MFkzDw -- https://github.com/freddenis/oracle-scripts
 #
-# The current script version is 20230317
+# The current script version is 20221222
 #
 # History :
 #
-# 20230317 - Fred Denis - Fixed a bug with clusyer name noty like db, thsi was a bad leftover sorry
-# 20230307 - Fred Denis - Automatically use the part of the nodenames before any "db" pattern to shorten the hostnames and no more the cluster name
-#                         Indeed, let's say you have a cluster named "crs19" and your nodenames are "dbproddb01, dbproddb02, etc.."; shortening using
-#                         If your hosts do not have a "db" pattern in their names, use the -C option to shorten them differently
-#                         More info in the FAQ: https://bit.ly/34lcFZo
-# 20221222 - Fred Denis - -C option to provide a string to shorten the hostnames (when the default shortening method does not suit you)
+# 20221222 - Fred Denis - -C option to allow a custom cluster name
 #                         Remove a leftover i which was preventing sorting
 #                         Fixed a bug which was impacting the databases which had the clustername in their name
 # 20220209 - Fred Denis - Fixed a bug due to awk non math context with DIFF_HOURS which was badly showing services
@@ -298,11 +293,6 @@ END
               $ ./rac-status.sh -w 24h        # 24 hours
               $ ./rac-status.sh -w 2d         # 2 days
               $ ./rac-status.sh -w 3m         # 3 months
-
-    -C    Use the string provided to -C to shorten the hostnames if the default shortening method does not suit you. By default, we remove everything before
-           a "db" pattern in the hostnames (dbproddb01 becomes db01); if your hosts do not contain "db" in their names, use -C to shorten as you wish.
-           As an example, if your hosts are named oracleprod01, oracleprod02, etc... using -C oracle would shorten the names to prod01, prod02, etc...
-
     -V        Shows the version of the script
     -h        Shows this help
 
@@ -436,9 +426,6 @@ if [[ -z "$FILE" ]]; then               # This is not needed when using an input
                NODES=$(olsnodes | ${AWK} '{if (NR<2){txt=$0} else{txt=txt","$0}} END {print txt}')
         CLUSTER_NAME=$(olsnodes -c)
     fi
-#    if [[ "${CLUSTER_NAME}" != *"db"* ]]; then
-#        SHORT_NAMES="NO"
-#    fi
     NAME_OF_THE_CLUSTER=$(olsnodes -c)
     # if oracle restart, olsnodes is here but returns nothing, we then set the NODES with the current hostname
     if [[ -z "${NODES}" ]]; then

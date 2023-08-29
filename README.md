@@ -1,2 +1,2 @@
 # oracle-scripts
-All oracle related scripts
+https://unknowndba.blogspot.com/
